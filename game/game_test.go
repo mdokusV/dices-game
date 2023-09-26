@@ -182,29 +182,3 @@ func TestRoleDices(t *testing.T) {
 		})
 	}
 }
-
-func TestPlayer_PrintPossibleChoices(t *testing.T) {
-	type fields struct {
-		ID         int
-		Score      int
-		TableScore map[int]int
-		TableUsed  map[int]bool
-	}
-	tests := []struct {
-		name   string
-		fields fields
-	}{
-		{"Nothing to be seen", fields{0, 0, map[int]int{2: 0, 3: 0}, map[int]bool{2: false, 3: false}}},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			player := &Player{
-				ID:         tt.fields.ID,
-				Score:      tt.fields.Score,
-				TableScore: tt.fields.TableScore,
-				TableUsed:  tt.fields.TableUsed,
-			}
-			player.PrintPossibleChoices()
-		})
-	}
-}

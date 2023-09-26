@@ -57,7 +57,7 @@ func PrintAllChoices() {
 	}
 }
 
-func (player *Player) PrintPossibleChoices() {
+func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
 	Options := map[int]string{
 		1:  "Roll",
 		2:  "OnePair",
@@ -75,7 +75,12 @@ func (player *Player) PrintPossibleChoices() {
 	fmt.Println("These are your choices:")
 
 	for key := 1; key < len(Options)+1; key++ {
+		if numberOfRemainingRolls == 0 && key == 1 {
+			continue
+		}
+
 		fmt.Printf("%d: %s", key, Options[key])
+
 		if key >= 2 && player.TableUsed[key] {
 			fmt.Printf("\tUSED")
 		}
@@ -109,38 +114,46 @@ func (player Player) FullTour() {
 		12: state.Chance,
 	}
 
-	//start 1st throw
+	//prep variables
 	diceSlice := make([]int, 5)
 	rolls := []bool{true, true, true, true, true}
-	RoleDices(diceSlice, rolls)
-	fmt.Printf("Your Rolls:\n%d\n\n", diceSlice)
-	player.PrintPossibleChoices()
+	numberOfRemainingRolls := 3
 
-	//Check if choice is legal
-	newChoiceForMove := acceptedChoice(player)
+	for numberOfRemainingRolls > 0 {
+		RoleDices(diceSlice, rolls)
+		fmt.Printf("Your Rolls:\n%d\n\n", diceSlice)
+		numberOfRemainingRolls--
 
-	//execute choice
-	if newChoiceForMove != 1 {
-		player.TableScore[newChoiceForMove] = optionFuncMap[newChoiceForMove](diceSlice) //Write score to table
-		player.Score += player.TableScore[newChoiceForMove]                              //Update sum score
-		player.TableUsed[newChoiceForMove] = true                                        //Update used table
-		fmt.Println(player)
-		return
+		player.PrintPossibleChoices(numberOfRemainingRolls)
+
+		//get legal state choice
+		newStateChoice := acceptedChoice(player, numberOfRemainingRolls)
+
+		//execute state choice
+		if newStateChoice != 1 {
+			player.TableScore[newStateChoice] = optionFuncMap[newStateChoice](diceSlice) //Write score to table
+			player.Score += player.TableScore[newStateChoice]                            //Update sum score
+			player.TableUsed[newStateChoice] = true                                      //Update used table
+			return
+		}
 	}
-	//end 1st throw
-	//start 2nd throw
 
 }
 
-func acceptedChoice(player Player) int {
+func acceptedChoice(player Player, numberOfRemainingRolls int) int {
 	var newChoiceForMove int
 	accepted := false
 	for !accepted {
 		newChoiceForMove = action.GiveMoveChoice()
-		if newChoiceForMove > 12 || newChoiceForMove < 0 {
+		if newChoiceForMove > 12 || newChoiceForMove < 1 {
 			fmt.Println("Action number not in range, try again")
 			continue
 		}
+		if newChoiceForMove == 1 && numberOfRemainingRolls == 0 {
+			fmt.Println("Its your last roll, you need to make a choice")
+			continue
+		}
+
 		if player.TableUsed[newChoiceForMove] {
 			fmt.Println("Action already used, try again")
 			continue

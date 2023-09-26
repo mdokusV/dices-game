@@ -1,11 +1,9 @@
 package action
 
-import (
-	"fmt"
-)
+import "fmt"
 
 func GiveMoveChoice() int {
-	choice := 2
+	choice := 1
 	fmt.Scanln(&choice)
 	return choice
 }

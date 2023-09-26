@@ -11,6 +11,13 @@ func main() {
 	playerGroup := game.NewPlayerGroup(globalVar.NumberOfPlayers)
 
 	//Play Tour
-	playerGroup[playerTour].FullTour()
+
+	for {
+		playerGroup[playerTour].FullTour()
+		playerTour++
+		if playerTour >= globalVar.NumberOfPlayers {
+			playerTour = 0
+		}
+	}
 
 }
