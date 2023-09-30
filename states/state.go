@@ -1,7 +1,5 @@
 package state
 
-import "fmt"
-
 const NUMBEROFDICES = 5
 
 func OnePair(currentState []int) int {
@@ -77,7 +75,6 @@ func FullHouse(currentState []int) int {
 		frequencyMap[nums]++
 	}
 	for item, amount := range frequencyMap {
-		fmt.Println(item, amount)
 		if amount == 5 {
 			collectedPoints += 5 * item
 		} else if amount == 3 {

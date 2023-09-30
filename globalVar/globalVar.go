@@ -11,7 +11,7 @@ const NumberOfDices = 5
 
 const NumberOfPlayers = 2
 
-const IO_human = true
+const IO_human = false
 
 var RandomGenerator *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 

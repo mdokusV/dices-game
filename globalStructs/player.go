@@ -3,7 +3,7 @@ package globalStructs
 import (
 	"fmt"
 
-	"github.com/mdokusV/dices-game/action"
+	ai "github.com/mdokusV/dices-game/AI"
 	"github.com/mdokusV/dices-game/globalVar"
 	"github.com/mdokusV/dices-game/helpers"
 	state "github.com/mdokusV/dices-game/states"
@@ -32,6 +32,21 @@ func NewPlayerGroup(size int) []Player {
 		}
 	}
 	return groupPlayer
+}
+
+func DeletePlayerGroup(groupPlayer []Player) {
+	for ID := range groupPlayer {
+		groupPlayer[ID] = Player{
+			ID:         ID,
+			Score:      0,
+			TableScore: make(map[int]int),
+			TableUsed:  make(map[int]bool),
+		}
+		for i := 2; i <= 12; i++ {
+			groupPlayer[ID].TableUsed[i] = false
+			groupPlayer[ID].TableScore[i] = 0
+		}
+	}
 }
 
 func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
@@ -65,7 +80,7 @@ func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
 	}
 }
 
-func (player Player) FullTour() {
+func (player *Player) FullTour() {
 	//define map from int choice to functions
 	optionFuncMap := map[int]func([]int) int{
 		2:  state.OnePair,
@@ -103,20 +118,23 @@ func (player Player) FullTour() {
 
 		//execute state choice
 		if newStateChoice != 1 {
-			player.TableScore[newStateChoice] = optionFuncMap[newStateChoice](diceSlice) //Write score to table
-			player.Score += player.TableScore[newStateChoice]                            //Update sum score
-			player.TableUsed[newStateChoice] = true                                      //Update used table
+			player.TableScore[newStateChoice] = optionFuncMap[newStateChoice](diceSlice)    //Write score to table
+			if numberOfRemainingRolls == 2 && newStateChoice >= 5 && newStateChoice <= 11 { //In first move
+				player.TableScore[newStateChoice] *= 2
+			}
+			player.Score += player.TableScore[newStateChoice] //Update sum score
+			player.TableUsed[newStateChoice] = true           //Update used table
 			return
 		}
 	}
 
 }
 
-func (player Player) acceptedChoice(numberOfRemainingRolls int) int {
+func (player *Player) acceptedChoice(numberOfRemainingRolls int) int {
 	var newChoiceForMove int
 	accepted := false
 	for !accepted {
-		newChoiceForMove = action.GiveMoveChoice()
+		newChoiceForMove = player.GiveMoveChoice()
 
 		if newChoiceForMove > 12 || newChoiceForMove < 1 {
 			fmt.Println("Action number not in range, try again")
@@ -134,4 +152,14 @@ func (player Player) acceptedChoice(numberOfRemainingRolls int) int {
 		accepted = true
 	}
 	return newChoiceForMove
+}
+
+func (player *Player) GiveMoveChoice() int {
+	choice := 1
+	if globalVar.IO_human {
+		fmt.Scanln(&choice)
+	} else {
+		choice = ai.DecideMove(player.TableUsed)
+	}
+	return choice
 }
