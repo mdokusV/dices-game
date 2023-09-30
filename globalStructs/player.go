@@ -36,12 +36,7 @@ func NewPlayerGroup(size int) []Player {
 
 func DeletePlayerGroup(groupPlayer []Player) {
 	for ID := range groupPlayer {
-		groupPlayer[ID] = Player{
-			ID:         ID,
-			Score:      0,
-			TableScore: make(map[int]int),
-			TableUsed:  make(map[int]bool),
-		}
+		groupPlayer[ID].Score = 0
 		for i := 2; i <= 12; i++ {
 			groupPlayer[ID].TableUsed[i] = false
 			groupPlayer[ID].TableScore[i] = 0
@@ -82,7 +77,7 @@ func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
 
 func (player *Player) FullTour() {
 	//define map from int choice to functions
-	optionFuncMap := map[int]func([]int) int{
+	optionFuncMap := []func([]int) int{
 		2:  state.OnePair,
 		3:  state.TwoPair,
 		4:  state.ThreeOfKind,

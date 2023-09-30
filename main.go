@@ -18,7 +18,7 @@ func main() {
 	defer pprof.StopCPUProfile()
 
 	playerGroup := globalStructs.NewPlayerGroup(globalVar.NumberOfPlayers)
-	for i := 0; i < 1_000_000; i++ {
+	for i := 0; i < 500_000; i++ {
 		globalStructs.DeletePlayerGroup(playerGroup)
 		//start game
 		game.Start(playerGroup)
