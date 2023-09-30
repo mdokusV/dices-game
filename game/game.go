@@ -3,11 +3,16 @@ package game
 import (
 	"fmt"
 
+	"github.com/mdokusV/dices-game/dices"
 	"github.com/mdokusV/dices-game/globalStructs"
 	"github.com/mdokusV/dices-game/globalVar"
 )
 
 func Start(playerGroup []globalStructs.Player) {
+
+	dices := dices.Dices{}
+	dices.NewDices()
+
 	playerTour := 0
 	for {
 		if globalVar.IO_human {
@@ -15,7 +20,7 @@ func Start(playerGroup []globalStructs.Player) {
 			fmt.Println(playerGroup[playerTour].TableUsed)
 		}
 
-		playerGroup[playerTour].FullTour()
+		playerGroup[playerTour].FullTour(dices)
 		playerTour++
 		if playerTour == globalVar.NumberOfPlayers {
 			if allMovesCompleted(playerGroup[0].TableUsed) {

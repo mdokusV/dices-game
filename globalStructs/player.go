@@ -2,11 +2,10 @@ package globalStructs
 
 import (
 	"fmt"
-	"math/rand"
 
 	ai "github.com/mdokusV/dices-game/AI"
+	"github.com/mdokusV/dices-game/dices"
 	"github.com/mdokusV/dices-game/globalVar"
-	"github.com/mdokusV/dices-game/helpers"
 	state "github.com/mdokusV/dices-game/states"
 )
 
@@ -72,7 +71,7 @@ func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
 	}
 }
 
-func (player *Player) FullTour() {
+func (player *Player) FullTour(dices dices.Dices) {
 	//define map from int choice to functions
 	optionFuncMap := []func([]int) int{
 		state.OnePair,
@@ -89,15 +88,13 @@ func (player *Player) FullTour() {
 	}
 
 	//prep variables
-	diceSlice := make([]int, 5)
-	rolls := []bool{true, true, true, true, true}
 	numberOfRemainingRolls := 3
 	StateChoice := 0
 
 	for numberOfRemainingRolls > 0 {
-		helpers.RoleDices(diceSlice, rolls)
+		dices.RoleDices()
 		if globalVar.IO_human {
-			fmt.Printf("Your Rolls:\n%d\n\n", diceSlice)
+			fmt.Printf("Your Rolls:\n%d\n\n", dices.DiceSlice)
 		}
 
 		numberOfRemainingRolls--
@@ -107,13 +104,13 @@ func (player *Player) FullTour() {
 		}
 
 		//get legal state choice
-		StateChoice, rolls = player.acceptedChoice(numberOfRemainingRolls, diceSlice)
+		StateChoice = player.acceptedChoice(numberOfRemainingRolls, dices)
 
 		//execute state choice
 		if StateChoice != 0 {
 			StateChoice--
-			player.TableScore[StateChoice] = optionFuncMap[StateChoice](diceSlice)    //Write score to table
-			if numberOfRemainingRolls == 2 && StateChoice >= 5 && StateChoice <= 11 { //In first move
+			player.TableScore[StateChoice] = optionFuncMap[StateChoice](dices.DiceSlice) //Write score to table
+			if numberOfRemainingRolls == 2 && StateChoice >= 3 && StateChoice <= 9 {     //In first move
 				player.TableScore[StateChoice] *= 2
 			}
 			player.Score += player.TableScore[StateChoice] //Update sum score
@@ -125,10 +122,10 @@ func (player *Player) FullTour() {
 
 }
 
-func (player *Player) acceptedChoice(numberOfRemainingRolls int, diceSlice []int) (newChoiceForMove int, rolls []bool) {
+func (player *Player) acceptedChoice(numberOfRemainingRolls int, dices dices.Dices) (newChoiceForMove int) {
 	accepted := false
 	for !accepted {
-		newChoiceForMove, rolls = player.GiveMoveChoice(diceSlice)
+		newChoiceForMove = player.GiveMoveChoice(dices)
 
 		if newChoiceForMove > globalVar.NumberOfStates || newChoiceForMove < 0 {
 			fmt.Println("Action number not in range, try again")
@@ -148,28 +145,28 @@ func (player *Player) acceptedChoice(numberOfRemainingRolls int, diceSlice []int
 		}
 		accepted = true
 	}
-	return newChoiceForMove, rolls
+	return newChoiceForMove
 }
 
-func (player *Player) GiveMoveChoice(diceSlice []int) (choice int, rolls []bool) {
+func (player *Player) GiveMoveChoice(dices dices.Dices) (choice int) {
 	choice = 0
 	if globalVar.IO_human {
 		fmt.Scanln(&choice)
 	} else {
-		choice = ai.DecideMove(player.TableUsed, diceSlice)
+		choice = ai.DecideMove(player.TableUsed, dices.DiceSlice)
 	}
 
 	if choice != 0 {
-		return choice, []bool{true, true, true, true, true}
+		return choice
 	}
 
 	//decide which dice to roll
 	if globalVar.IO_human {
-		rolls = []bool{true, true, true, true, true}
+		dices.Rolls = []bool{true, true, true, true, true}
 	} else {
-		rolls = []bool{rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0}
+		dices.Rolls = []bool{globalVar.FastRandomGenerator.Uint32n(2) == 0, globalVar.FastRandomGenerator.Uint32n(2) == 0, globalVar.FastRandomGenerator.Uint32n(2) == 0, globalVar.FastRandomGenerator.Uint32n(2) == 0, globalVar.FastRandomGenerator.Uint32n(2) == 0}
 	}
 
-	return choice, rolls
+	return choice
 
 }

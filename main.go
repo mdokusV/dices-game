@@ -22,13 +22,12 @@ func main() {
 	globalVar.FastRandomGenerator.Seed(uint32(time.Now().UnixNano()))
 
 	playerGroup := globalStructs.NewPlayerGroup(globalVar.NumberOfPlayers)
-	for i := 0; i < 500_000; i++ {
+	for i := 0; i < 1_000_000; i++ {
 		globalStructs.ResetPlayerGroup(playerGroup)
 		//start game
 		game.Start(playerGroup)
 		// fmt.Println(playerGroup[0])
 		// fmt.Println(playerGroup[1])
 		// fmt.Println()
-
 	}
 }

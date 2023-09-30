@@ -236,8 +236,8 @@ func TestChance(t *testing.T) {
 		args args
 		want int
 	}{
-		{"One Slice", args{[]int{5, 3, 2, 2, 1}}, 5 + 3 + 2 + 2 + 1},
-		{"Two Slice", args{[]int{2, 2, 4, 6, 2}}, 2 + 2 + 4 + 6 + 2},
+		{"Slice one", args{[]int{5, 3, 2, 2, 1}}, 5 + 3 + 2 + 2 + 1},
+		{"Slice two", args{[]int{2, 2, 4, 6, 2}}, 2 + 2 + 4 + 6 + 2},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
