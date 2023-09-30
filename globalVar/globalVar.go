@@ -9,7 +9,9 @@ import (
 
 const NumberOfDices = 5
 
-const NumberOfPlayers = 3
+const NumberOfPlayers = 2
+
+const IO_human = true
 
 var RandomGenerator *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
 

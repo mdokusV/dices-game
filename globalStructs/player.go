@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/mdokusV/dices-game/action"
+	"github.com/mdokusV/dices-game/globalVar"
 	"github.com/mdokusV/dices-game/helpers"
 	state "github.com/mdokusV/dices-game/states"
 )
@@ -29,7 +30,6 @@ func NewPlayerGroup(size int) []Player {
 			groupPlayer[ID].TableUsed[i] = false
 			groupPlayer[ID].TableScore[i] = 0
 		}
-		fmt.Println(groupPlayer[ID])
 	}
 	return groupPlayer
 }
@@ -88,10 +88,15 @@ func (player Player) FullTour() {
 
 	for numberOfRemainingRolls > 0 {
 		helpers.RoleDices(diceSlice, rolls)
-		fmt.Printf("Your Rolls:\n%d\n\n", diceSlice)
+		if globalVar.IO_human {
+			fmt.Printf("Your Rolls:\n%d\n\n", diceSlice)
+		}
+
 		numberOfRemainingRolls--
 
-		player.PrintPossibleChoices(numberOfRemainingRolls)
+		if globalVar.IO_human {
+			player.PrintPossibleChoices(numberOfRemainingRolls)
+		}
 
 		//get legal state choice
 		newStateChoice := player.acceptedChoice(numberOfRemainingRolls)
@@ -112,6 +117,7 @@ func (player Player) acceptedChoice(numberOfRemainingRolls int) int {
 	accepted := false
 	for !accepted {
 		newChoiceForMove = action.GiveMoveChoice()
+
 		if newChoiceForMove > 12 || newChoiceForMove < 1 {
 			fmt.Println("Action number not in range, try again")
 			continue
