@@ -1,18 +1,22 @@
 package game
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/mdokusV/dices-game/globalVar"
+)
 
 func Test_allMovesCompleted(t *testing.T) {
 	type args struct {
-		states map[int]bool
+		states [globalVar.NumberOfStates]bool
 	}
 	tests := []struct {
 		name string
 		args args
 		want bool
 	}{
-		{"All moves completed", args{map[int]bool{1: true, 2: true, 3: true, 4: true, 5: true}}, true},
-		{"Not all moves completed", args{map[int]bool{1: true, 2: true, 3: true, 4: true, 5: false}}, false},
+		{"All moves completed", args{[globalVar.NumberOfStates]bool{true, true, true, true, true, true, true, true, true, true, true}}, true},
+		{"All moves completed", args{[globalVar.NumberOfStates]bool{true, true, true, true, true, true, true, true, false, true, true}}, false},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

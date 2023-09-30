@@ -26,7 +26,7 @@ func Start(playerGroup []globalStructs.Player) {
 	}
 }
 
-func allMovesCompleted(states map[int]bool) bool {
+func allMovesCompleted(states [globalVar.NumberOfStates]bool) bool {
 	for _, state := range states {
 		if !state {
 			return false

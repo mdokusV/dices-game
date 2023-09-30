@@ -2,6 +2,7 @@ package globalStructs
 
 import (
 	"fmt"
+	"math/rand"
 
 	ai "github.com/mdokusV/dices-game/AI"
 	"github.com/mdokusV/dices-game/globalVar"
@@ -12,21 +13,17 @@ import (
 type Player struct {
 	ID         int
 	Score      int
-	TableScore map[int]int
-	TableUsed  map[int]bool
+	TableScore [globalVar.NumberOfStates]int
+	TableUsed  [globalVar.NumberOfStates]bool
 }
 
 func NewPlayerGroup(size int) []Player {
 
 	groupPlayer := make([]Player, size)
 	for ID := range groupPlayer {
-		groupPlayer[ID] = Player{
-			ID:         ID,
-			Score:      0,
-			TableScore: make(map[int]int),
-			TableUsed:  make(map[int]bool),
-		}
-		for i := 2; i <= 12; i++ {
+		groupPlayer[ID].ID = ID
+		groupPlayer[ID].Score = 0
+		for i := 0; i < globalVar.NumberOfStates; i++ {
 			groupPlayer[ID].TableUsed[i] = false
 			groupPlayer[ID].TableScore[i] = 0
 		}
@@ -34,10 +31,10 @@ func NewPlayerGroup(size int) []Player {
 	return groupPlayer
 }
 
-func DeletePlayerGroup(groupPlayer []Player) {
+func ResetPlayerGroup(groupPlayer []Player) {
 	for ID := range groupPlayer {
 		groupPlayer[ID].Score = 0
-		for i := 2; i <= 12; i++ {
+		for i := 0; i < globalVar.NumberOfStates; i++ {
 			groupPlayer[ID].TableUsed[i] = false
 			groupPlayer[ID].TableScore[i] = 0
 		}
@@ -45,30 +42,30 @@ func DeletePlayerGroup(groupPlayer []Player) {
 }
 
 func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
-	Options := map[int]string{
-		1:  "Roll",
-		2:  "OnePair",
-		3:  "TwoPair",
-		4:  "ThreeOfKind",
-		5:  "SmallStraight",
-		6:  "BigStraight",
-		7:  "FullHouse",
-		8:  "FourOfKind",
-		9:  "FiveOfKind",
-		10: "Odd",
-		11: "Even",
-		12: "Chance",
+	Options := [globalVar.NumberOfStates + 1]string{
+		"Roll",
+		"OnePair",
+		"TwoPair",
+		"ThreeOfKind",
+		"SmallStraight",
+		"BigStraight",
+		"FullHouse",
+		"FourOfKind",
+		"FiveOfKind",
+		"Odd",
+		"Even",
+		"Chance",
 	}
 	fmt.Println("These are your choices:")
 
-	for key := 1; key < len(Options)+1; key++ {
-		if numberOfRemainingRolls == 0 && key == 1 {
+	for key := 0; key < len(Options); key++ {
+		if numberOfRemainingRolls == 0 && key == 0 {
 			continue
 		}
 
 		fmt.Printf("%d: %s", key, Options[key])
 
-		if key >= 2 && player.TableUsed[key] {
+		if key >= 1 && player.TableUsed[key-1] {
 			fmt.Printf("\tUSED")
 		}
 		fmt.Println()
@@ -78,23 +75,24 @@ func (player *Player) PrintPossibleChoices(numberOfRemainingRolls int) {
 func (player *Player) FullTour() {
 	//define map from int choice to functions
 	optionFuncMap := []func([]int) int{
-		2:  state.OnePair,
-		3:  state.TwoPair,
-		4:  state.ThreeOfKind,
-		5:  state.SmallStraight,
-		6:  state.BigStraight,
-		7:  state.FullHouse,
-		8:  state.FourOfKind,
-		9:  state.FiveOfKind,
-		10: state.Odd,
-		11: state.Even,
-		12: state.Chance,
+		state.OnePair,
+		state.TwoPair,
+		state.ThreeOfKind,
+		state.SmallStraight,
+		state.BigStraight,
+		state.FullHouse,
+		state.FourOfKind,
+		state.FiveOfKind,
+		state.Odd,
+		state.Even,
+		state.Chance,
 	}
 
 	//prep variables
 	diceSlice := make([]int, 5)
 	rolls := []bool{true, true, true, true, true}
 	numberOfRemainingRolls := 3
+	StateChoice := 0
 
 	for numberOfRemainingRolls > 0 {
 		helpers.RoleDices(diceSlice, rolls)
@@ -109,52 +107,69 @@ func (player *Player) FullTour() {
 		}
 
 		//get legal state choice
-		newStateChoice := player.acceptedChoice(numberOfRemainingRolls)
+		StateChoice, rolls = player.acceptedChoice(numberOfRemainingRolls, diceSlice)
 
 		//execute state choice
-		if newStateChoice != 1 {
-			player.TableScore[newStateChoice] = optionFuncMap[newStateChoice](diceSlice)    //Write score to table
-			if numberOfRemainingRolls == 2 && newStateChoice >= 5 && newStateChoice <= 11 { //In first move
-				player.TableScore[newStateChoice] *= 2
+		if StateChoice != 0 {
+			StateChoice--
+			player.TableScore[StateChoice] = optionFuncMap[StateChoice](diceSlice)    //Write score to table
+			if numberOfRemainingRolls == 2 && StateChoice >= 5 && StateChoice <= 11 { //In first move
+				player.TableScore[StateChoice] *= 2
 			}
-			player.Score += player.TableScore[newStateChoice] //Update sum score
-			player.TableUsed[newStateChoice] = true           //Update used table
+			player.Score += player.TableScore[StateChoice] //Update sum score
+			player.TableUsed[StateChoice] = true           //Update used table
 			return
 		}
 	}
+	panic("NumberOfRemainingRolls is less than or equal 0")
 
 }
 
-func (player *Player) acceptedChoice(numberOfRemainingRolls int) int {
-	var newChoiceForMove int
+func (player *Player) acceptedChoice(numberOfRemainingRolls int, diceSlice []int) (newChoiceForMove int, rolls []bool) {
 	accepted := false
 	for !accepted {
-		newChoiceForMove = player.GiveMoveChoice()
+		newChoiceForMove, rolls = player.GiveMoveChoice(diceSlice)
 
-		if newChoiceForMove > 12 || newChoiceForMove < 1 {
+		if newChoiceForMove > globalVar.NumberOfStates || newChoiceForMove < 0 {
 			fmt.Println("Action number not in range, try again")
 			continue
 		}
-		if newChoiceForMove == 1 && numberOfRemainingRolls == 0 {
+		if newChoiceForMove == 0 && numberOfRemainingRolls == 0 {
 			fmt.Println("Its your last roll, you need to make a choice")
 			continue
 		}
-
-		if player.TableUsed[newChoiceForMove] {
+		if newChoiceForMove == 0 && numberOfRemainingRolls > 0 {
+			accepted = true
+			continue
+		}
+		if player.TableUsed[newChoiceForMove-1] {
 			fmt.Println("Action already used, try again")
 			continue
 		}
 		accepted = true
 	}
-	return newChoiceForMove
+	return newChoiceForMove, rolls
 }
 
-func (player *Player) GiveMoveChoice() int {
-	choice := 1
+func (player *Player) GiveMoveChoice(diceSlice []int) (choice int, rolls []bool) {
+	choice = 0
 	if globalVar.IO_human {
 		fmt.Scanln(&choice)
 	} else {
-		choice = ai.DecideMove(player.TableUsed)
+		choice = ai.DecideMove(player.TableUsed, diceSlice)
 	}
-	return choice
+
+	if choice != 0 {
+		return choice, []bool{true, true, true, true, true}
+	}
+
+	//decide which dice to roll
+	if globalVar.IO_human {
+		rolls = []bool{true, true, true, true, true}
+	} else {
+		rolls = []bool{rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0, rand.Intn(2) == 0}
+	}
+
+	return choice, rolls
+
 }

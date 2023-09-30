@@ -3,10 +3,10 @@ package state
 const NUMBEROFDICES = 5
 
 func OnePair(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequency [7]uint8
 	for _, num := range currentState {
-		frequencyMap[num]++
-		if frequencyMap[num] == 2 {
+		frequency[num]++
+		if frequency[num] == 2 {
 			return num * 2
 		}
 	}
@@ -14,15 +14,15 @@ func OnePair(currentState []int) int {
 }
 
 func TwoPair(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequency [7]uint8
 	pairs := 0
 	collectedPoints := 0
 
 	for _, nums := range currentState {
-		frequencyMap[nums]++
-		if frequencyMap[nums] == 2 {
+		frequency[nums]++
+		if frequency[nums] == 2 {
 			pairs++
-			frequencyMap[nums] = 0
+			frequency[nums] = 0
 			collectedPoints += nums * 2
 		}
 		if pairs == 2 {
@@ -33,10 +33,10 @@ func TwoPair(currentState []int) int {
 }
 
 func ThreeOfKind(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequency [7]uint8
 	for _, num := range currentState {
-		frequencyMap[num]++
-		if frequencyMap[num] == 3 {
+		frequency[num]++
+		if frequency[num] == 3 {
 			return num * 3
 		}
 	}
@@ -68,19 +68,21 @@ func BigStraight(currentState []int) int {
 }
 
 func FullHouse(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequencyArray [7]uint8
 	collectedPoints := 0
 
 	for _, nums := range currentState {
-		frequencyMap[nums]++
+		frequencyArray[nums]++
 	}
-	for item, amount := range frequencyMap {
+	for item, amount := range frequencyArray {
 		if amount == 5 {
 			collectedPoints += 5 * item
 		} else if amount == 3 {
 			collectedPoints += 3 * item
 		} else if amount == 2 {
 			collectedPoints += 2 * item
+		} else if amount == 0 {
+			continue
 		} else {
 			return 0
 		}
@@ -90,10 +92,10 @@ func FullHouse(currentState []int) int {
 }
 
 func FourOfKind(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequency [7]uint8
 	for _, num := range currentState {
-		frequencyMap[num]++
-		if frequencyMap[num] == 4 {
+		frequency[num]++
+		if frequency[num] == 4 {
 			return num * 4
 		}
 	}
@@ -101,10 +103,10 @@ func FourOfKind(currentState []int) int {
 }
 
 func FiveOfKind(currentState []int) int {
-	frequencyMap := make(map[int]int)
+	var frequency [7]uint8
 	for _, num := range currentState {
-		frequencyMap[num]++
-		if frequencyMap[num] == 5 {
+		frequency[num]++
+		if frequency[num] == 5 {
 			return num * 5
 		}
 	}

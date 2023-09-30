@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"os"
 	"runtime/pprof"
+	"time"
 
 	"github.com/mdokusV/dices-game/game"
 	globalStructs "github.com/mdokusV/dices-game/globalStructs"
@@ -17,9 +18,12 @@ func main() {
 	pprof.StartCPUProfile(f)
 	defer pprof.StopCPUProfile()
 
+	//RNG setup
+	globalVar.FastRandomGenerator.Seed(uint32(time.Now().UnixNano()))
+
 	playerGroup := globalStructs.NewPlayerGroup(globalVar.NumberOfPlayers)
 	for i := 0; i < 500_000; i++ {
-		globalStructs.DeletePlayerGroup(playerGroup)
+		globalStructs.ResetPlayerGroup(playerGroup)
 		//start game
 		game.Start(playerGroup)
 		// fmt.Println(playerGroup[0])

@@ -3,6 +3,8 @@ package globalStructs
 import (
 	"reflect"
 	"testing"
+
+	"github.com/mdokusV/dices-game/globalVar"
 )
 
 func TestNewPlayerGroup(t *testing.T) {
@@ -19,31 +21,31 @@ func TestNewPlayerGroup(t *testing.T) {
 				{
 					ID:    0,
 					Score: 0,
-					TableScore: map[int]int{
-						2:  0,
-						3:  0,
-						4:  0,
-						5:  0,
-						6:  0,
-						7:  0,
-						8:  0,
-						9:  0,
-						10: 0,
-						11: 0,
-						12: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
 					},
-					TableUsed: map[int]bool{
-						2:  false,
-						3:  false,
-						4:  false,
-						5:  false,
-						6:  false,
-						7:  false,
-						8:  false,
-						9:  false,
-						10: false,
-						11: false,
-						12: false,
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
 					},
 				},
 			},
@@ -53,91 +55,91 @@ func TestNewPlayerGroup(t *testing.T) {
 				{
 					ID:    0,
 					Score: 0,
-					TableScore: map[int]int{
-						2:  0,
-						3:  0,
-						4:  0,
-						5:  0,
-						6:  0,
-						7:  0,
-						8:  0,
-						9:  0,
-						10: 0,
-						11: 0,
-						12: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
 					},
-					TableUsed: map[int]bool{
-						2:  false,
-						3:  false,
-						4:  false,
-						5:  false,
-						6:  false,
-						7:  false,
-						8:  false,
-						9:  false,
-						10: false,
-						11: false,
-						12: false,
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
 					},
 				},
 				{
 					ID:    1,
 					Score: 0,
-					TableScore: map[int]int{
-						2:  0,
-						3:  0,
-						4:  0,
-						5:  0,
-						6:  0,
-						7:  0,
-						8:  0,
-						9:  0,
-						10: 0,
-						11: 0,
-						12: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
 					},
-					TableUsed: map[int]bool{
-						2:  false,
-						3:  false,
-						4:  false,
-						5:  false,
-						6:  false,
-						7:  false,
-						8:  false,
-						9:  false,
-						10: false,
-						11: false,
-						12: false,
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
 					},
 				},
 				{
 					ID:    2,
 					Score: 0,
-					TableScore: map[int]int{
-						2:  0,
-						3:  0,
-						4:  0,
-						5:  0,
-						6:  0,
-						7:  0,
-						8:  0,
-						9:  0,
-						10: 0,
-						11: 0,
-						12: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
 					},
-					TableUsed: map[int]bool{
-						2:  false,
-						3:  false,
-						4:  false,
-						5:  false,
-						6:  false,
-						7:  false,
-						8:  false,
-						9:  false,
-						10: false,
-						11: false,
-						12: false,
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
 					},
 				},
 			},
@@ -147,6 +149,222 @@ func TestNewPlayerGroup(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := NewPlayerGroup(tt.args.size); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("NewPlayerGroup() = %v, want %v\n", got, tt.want)
+			}
+		})
+	}
+}
+func TestResetPlayerGroup(t *testing.T) {
+	type args struct {
+		size int
+	}
+	tests := []struct {
+		name string
+		args args
+		want []Player
+	}{
+		{
+			"Test with size 1", args{size: 1}, []Player{
+				{
+					ID:    0,
+					Score: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+					},
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+					},
+				},
+			},
+		},
+		{
+			"Test with size 3", args{size: 3}, []Player{
+				{
+					ID:    0,
+					Score: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+					},
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+					},
+				},
+				{
+					ID:    1,
+					Score: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+					},
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+					},
+				},
+				{
+					ID:    2,
+					Score: 0,
+					TableScore: [globalVar.NumberOfStates]int{
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+						0,
+					},
+					TableUsed: [globalVar.NumberOfStates]bool{
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+						false,
+					},
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewPlayerGroup(tt.args.size)
+			if ResetPlayerGroup(got); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewPlayerGroup() = %v, want %v\n", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestPlayer_PrintPossibleChoices(t *testing.T) {
+	type fields struct {
+		ID         int
+		Score      int
+		TableScore [globalVar.NumberOfStates]int
+		TableUsed  [globalVar.NumberOfStates]bool
+	}
+	type args struct {
+		numberOfRemainingRolls int
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{"Nothing to be seen", fields{0, 0, [globalVar.NumberOfStates]int{}, [globalVar.NumberOfStates]bool{}}, args{1}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			player := &Player{
+				ID:         tt.fields.ID,
+				Score:      tt.fields.Score,
+				TableScore: tt.fields.TableScore,
+				TableUsed:  tt.fields.TableUsed,
+			}
+			player.PrintPossibleChoices(tt.args.numberOfRemainingRolls)
+		})
+	}
+}
+
+func TestPlayer_acceptedChoice(t *testing.T) {
+	type fields struct {
+		ID         int
+		Score      int
+		TableScore [globalVar.NumberOfStates]int
+		TableUsed  [globalVar.NumberOfStates]bool
+	}
+	type args struct {
+		numberOfRemainingRolls int
+		diceSlice              []int
+	}
+	tests := []struct {
+		name                 string
+		fields               fields
+		args                 args
+		wantNewChoiceForMove int
+		wantRolls            []bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			player := &Player{
+				ID:         tt.fields.ID,
+				Score:      tt.fields.Score,
+				TableScore: tt.fields.TableScore,
+				TableUsed:  tt.fields.TableUsed,
+			}
+			gotNewChoiceForMove, gotRolls := player.acceptedChoice(tt.args.numberOfRemainingRolls, tt.args.diceSlice)
+			if gotNewChoiceForMove != tt.wantNewChoiceForMove {
+				t.Errorf("Player.acceptedChoice() gotNewChoiceForMove = %v, want %v", gotNewChoiceForMove, tt.wantNewChoiceForMove)
+			}
+			if !reflect.DeepEqual(gotRolls, tt.wantRolls) {
+				t.Errorf("Player.acceptedChoice() gotRolls = %v, want %v", gotRolls, tt.wantRolls)
 			}
 		})
 	}
